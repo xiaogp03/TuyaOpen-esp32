@@ -32,7 +32,7 @@
   #define TKL_SPI_PORT_COUNT  2        /* FSPI=SPI2_HOST(IOMUX), SPI3=GPIO matrix */
   #define TKL_SPI_HOST0       SPI2_HOST
   #define TKL_SPI_HOST1       SPI3_HOST
-#elif defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32C6)
+#elif defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32C6) || defined(CONFIG_IDF_TARGET_ESP32C5)
   #define TKL_SPI_PORT_COUNT  1        /* only SPI2_HOST available */
   #define TKL_SPI_HOST0       SPI2_HOST
 #elif defined(CONFIG_IDF_TARGET_ESP32P4)

@@ -75,6 +75,22 @@ unsigned char s_wifi_macaddr[6] = { 0 };
 #define TKL_WIFI_PSK_LEN 32
 #define TKL_WIFI_LISTEN_INTERVAL_DEF 3
 
+static void tkl_wifi_copy_str(uint8_t *dst, size_t dst_size, const uint8_t *src)
+{
+    size_t n = strnlen((const char *)src, dst_size);
+
+    memset(dst, 0, dst_size);
+    memcpy(dst, src, n);
+}
+
+static void tkl_wifi_copy_len(uint8_t *dst, size_t dst_size, const uint8_t *src, size_t len)
+{
+    size_t n = len < dst_size ? len : dst_size;
+
+    memset(dst, 0, dst_size);
+    memcpy(dst, src, n);
+}
+
 typedef struct {
     uint8_t             ssid[TKL_WIFI_SSID_LEN+1];
     uint8_t             password[TKL_WIFI_PASSWD_LEN+1];
@@ -889,12 +905,12 @@ OPERATE_RET tkl_wifi_station_connect(const int8_t *ssid, const int8_t *passwd)
     memset(&ap_conn_info, 0, sizeof(ap_conn_info));
     memset(&wifi_cfg, 0, sizeof(wifi_cfg));
 
-    strncpy((char *)wifi_cfg.sta.ssid, (char *)ssid, TKL_WIFI_SSID_LEN);
-    strncpy((char *)ap_conn_info.ssid, (char *)ssid, TKL_WIFI_SSID_LEN);
+    tkl_wifi_copy_str((uint8_t *)wifi_cfg.sta.ssid, sizeof(wifi_cfg.sta.ssid), (const uint8_t *)ssid);
+    tkl_wifi_copy_str((uint8_t *)ap_conn_info.ssid, TKL_WIFI_SSID_LEN, (const uint8_t *)ssid);
 
     if (passwd && passwd[0] != '\0') {
-        strncpy((char *)wifi_cfg.sta.password, (char *)passwd, TKL_WIFI_PASSWD_LEN);
-        strncpy((char *)ap_conn_info.password, (char *)passwd, TKL_WIFI_PASSWD_LEN);
+        tkl_wifi_copy_str((uint8_t *)wifi_cfg.sta.password, sizeof(wifi_cfg.sta.password), (const uint8_t *)passwd);
+        tkl_wifi_copy_str((uint8_t *)ap_conn_info.password, TKL_WIFI_PASSWD_LEN, (const uint8_t *)passwd);
     }
 
     wifi_cfg.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
@@ -1030,9 +1046,9 @@ OPERATE_RET tkl_wifi_start_ap(const WF_AP_CFG_IF_S *cfg)
     assert(NULL != cfg);
 
     memset(&wifi_cfg, 0, sizeof(wifi_cfg));
-    strncpy((char *)wifi_cfg.ap.ssid, (char *)cfg->ssid, cfg->s_len);
+    tkl_wifi_copy_len((uint8_t *)wifi_cfg.ap.ssid, sizeof(wifi_cfg.ap.ssid), (const uint8_t *)cfg->ssid, cfg->s_len);
     if (cfg->p_len && cfg->p_len <= 64) {
-        strncpy((char *)wifi_cfg.ap.password, (char *)cfg->passwd, cfg->p_len);
+        tkl_wifi_copy_len((uint8_t *)wifi_cfg.ap.password, sizeof(wifi_cfg.ap.password), (const uint8_t *)cfg->passwd, cfg->p_len);
     }
     wifi_cfg.ap.channel = cfg->chan;
     wifi_cfg.ap.beacon_interval = cfg->ms_interval;
@@ -1204,12 +1220,12 @@ OPERATE_RET tkl_wifi_station_fast_connect(const FAST_WF_CONNECTED_AP_INFO_T *fas
     ptr = (tkl_wifi_ap_conn_info_s *)fast_ap_info->data;
     
     memset(&wifi_cfg, 0, sizeof(wifi_cfg));
-    strncpy((char *)wifi_cfg.sta.ssid, (char *)ptr->ssid, TKL_WIFI_SSID_LEN);
-    strncpy((char *)ap_conn_info.ssid, (char *)ptr->ssid, TKL_WIFI_SSID_LEN);
+    tkl_wifi_copy_str((uint8_t *)wifi_cfg.sta.ssid, sizeof(wifi_cfg.sta.ssid), (const uint8_t *)ptr->ssid);
+    tkl_wifi_copy_str((uint8_t *)ap_conn_info.ssid, TKL_WIFI_SSID_LEN, (const uint8_t *)ptr->ssid);
 
     if (ptr->password[0] != '\0') {
-        strncpy((char *)wifi_cfg.sta.password, (char *)ptr->password, TKL_WIFI_PASSWD_LEN);
-        strncpy((char *)ap_conn_info.password, (char *)ptr->password, TKL_WIFI_PASSWD_LEN);
+        tkl_wifi_copy_str((uint8_t *)wifi_cfg.sta.password, sizeof(wifi_cfg.sta.password), (const uint8_t *)ptr->password);
+        tkl_wifi_copy_str((uint8_t *)ap_conn_info.password, TKL_WIFI_PASSWD_LEN, (const uint8_t *)ptr->password);
     }
 
     wifi_cfg.sta.scan_method = WIFI_FAST_SCAN;

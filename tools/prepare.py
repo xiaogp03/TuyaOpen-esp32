@@ -85,7 +85,7 @@ def download_esp_idf():
     idf_path = os.environ["IDF_PATH"]
     if not os.path.exists(idf_path):
         print("Initialing esp-idf ...")
-        idf_version = "v5.4"
+        idf_version = "v5.5.4"
         cmds = [
             "git",
             "clone",
