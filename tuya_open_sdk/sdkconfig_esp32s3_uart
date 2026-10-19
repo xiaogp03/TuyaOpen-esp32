@@ -1,4 +1,15 @@
 #
+# ===========================================================================
+# LOCAL TWEAKS (2026-09-14) -- NOT upstream. Revert instructions:
+#   full backup: D:\CODE\mimocode\tuyaopenLvgl7inch\backup_20260914\
+#                sdkconfig_esp32s3_uart.orig-20260914
+#   see also   : backup_20260914\LOCAL_TWEAKS.md
+#   applied here: (1) 64-byte data cache line, (2) -O2 instead of -Os,
+#                 (3) QIO flash mode instead of DIO (XIP instruction fetch)
+# Both target LCD animation smoothness on WAVESHARE_ESP32S3_TOUCH_LCD_7.
+# They are platform-wide: every ESP32-S3 board built on this checkout sees them.
+# ===========================================================================
+#
 # Automatically generated file. DO NOT EDIT.
 # Espressif IoT Development Framework (ESP-IDF) 5.4.0 Project Configuration
 #
@@ -509,12 +520,15 @@ CONFIG_BOOT_ROM_LOG_ALWAYS_ON=y
 # CONFIG_ESPTOOLPY_NO_STUB is not set
 # CONFIG_ESPTOOLPY_OCT_FLASH is not set
 CONFIG_ESPTOOLPY_FLASH_MODE_AUTO_DETECT=y
-# CONFIG_ESPTOOLPY_FLASHMODE_QIO is not set
+# LOCAL TWEAK 2026-09-14: QIO flash mode (was DIO) so LVGL code/font XIP fetch
+# uses 4 data lines. Revert: FLASHMODE_QIO not set, FLASHMODE_DIO=y, ="dio",
+# FLASHMODE_QIO not set, FLASHMODE_DIO=y (see the two blocks below).
+CONFIG_ESPTOOLPY_FLASHMODE_QIO=y
 # CONFIG_ESPTOOLPY_FLASHMODE_QOUT is not set
-CONFIG_ESPTOOLPY_FLASHMODE_DIO=y
+# CONFIG_ESPTOOLPY_FLASHMODE_DIO is not set
 # CONFIG_ESPTOOLPY_FLASHMODE_DOUT is not set
 CONFIG_ESPTOOLPY_FLASH_SAMPLE_MODE_STR=y
-CONFIG_ESPTOOLPY_FLASHMODE="dio"
+CONFIG_ESPTOOLPY_FLASHMODE="qio"
 # CONFIG_ESPTOOLPY_FLASHFREQ_120M is not set
 CONFIG_ESPTOOLPY_FLASHFREQ_80M=y
 # CONFIG_ESPTOOLPY_FLASHFREQ_40M is not set
@@ -618,9 +632,11 @@ CONFIG_SR_MN_EN_NONE=y
 #
 # Compiler options
 #
+# LOCAL TWEAK 2026-09-14: -O2 instead of -Os (LVGL rendering is math heavy).
+# Revert: OPTIMIZATION_SIZE=y, OPTIMIZATION_PERF not set.
 # CONFIG_COMPILER_OPTIMIZATION_DEBUG is not set
-CONFIG_COMPILER_OPTIMIZATION_SIZE=y
-# CONFIG_COMPILER_OPTIMIZATION_PERF is not set
+# CONFIG_COMPILER_OPTIMIZATION_SIZE is not set
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
 # CONFIG_COMPILER_OPTIMIZATION_NONE is not set
 CONFIG_COMPILER_OPTIMIZATION_ASSERTIONS_ENABLE=y
 # CONFIG_COMPILER_OPTIMIZATION_ASSERTIONS_SILENT is not set
@@ -1275,10 +1291,12 @@ CONFIG_ESP32S3_DATA_CACHE_SIZE=0x8000
 # CONFIG_ESP32S3_DATA_CACHE_4WAYS is not set
 CONFIG_ESP32S3_DATA_CACHE_8WAYS=y
 CONFIG_ESP32S3_DCACHE_ASSOCIATED_WAYS=8
+# LOCAL TWEAK 2026-09-14: 64-byte data cache line (was 32B) for framebuffer /
+# PSRAM sequential traffic. Revert: LINE_32B=y, LINE_64B not set, SIZE=32.
 # CONFIG_ESP32S3_DATA_CACHE_LINE_16B is not set
-CONFIG_ESP32S3_DATA_CACHE_LINE_32B=y
-# CONFIG_ESP32S3_DATA_CACHE_LINE_64B is not set
-CONFIG_ESP32S3_DATA_CACHE_LINE_SIZE=32
+# CONFIG_ESP32S3_DATA_CACHE_LINE_32B is not set
+CONFIG_ESP32S3_DATA_CACHE_LINE_64B=y
+CONFIG_ESP32S3_DATA_CACHE_LINE_SIZE=64
 # end of Cache config
 
 #
@@ -2683,9 +2701,11 @@ CONFIG_LOG_BOOTLOADER_LEVEL_INFO=y
 CONFIG_LOG_BOOTLOADER_LEVEL=3
 # CONFIG_APP_ROLLBACK_ENABLE is not set
 # CONFIG_FLASH_ENCRYPTION_ENABLED is not set
-# CONFIG_FLASHMODE_QIO is not set
+# LOCAL TWEAK 2026-09-14: bootloader flash mode QIO (was DIO).
+# Revert: FLASHMODE_QIO not set, FLASHMODE_DIO=y.
+CONFIG_FLASHMODE_QIO=y
 # CONFIG_FLASHMODE_QOUT is not set
-CONFIG_FLASHMODE_DIO=y
+# CONFIG_FLASHMODE_DIO is not set
 # CONFIG_FLASHMODE_DOUT is not set
 CONFIG_MONITOR_BAUD=115200
 # CONFIG_OPTIMIZATION_LEVEL_DEBUG is not set
